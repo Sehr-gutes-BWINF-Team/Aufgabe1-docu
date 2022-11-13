@@ -1,4 +1,3 @@
-
 \maketitle
 \tableofcontents
 
@@ -6,12 +5,34 @@
 
 
 \section{Lösungsidee}\label{sec:losungsidee}
-Die Idee der Lösung sollte hieraus vollkommen ersichtlich werden, ohne dass auf die eigentliche Implementierung Bezug genommen wird.
+Das Satzfragment wird eingelesen und in eine Regular Expression überführt.
+Außerdem wird das Buch von seinen Satz- und Sonderzeichen sowie Einrückungen bereinigt.
+Anschließend wird mittels der Regular Expression alle in betracht kommenden Textstellen gesucht
+und letztendlich Ausgegeben.
 
 
 \section{Umsetzung}\label{sec:umsetzung}
-Hier wird kurz erläutert, wie die Lösungsidee im Programm tatsächlich umgesetzt wurde.
-Hier können auch Implementierungsdetails erwähnt werden.
+Die Implementierung erfolgt in Python. \\
+Es wird das Python re module verwendet.
+Dieses ermöglicht es Reguläre Ausdrücke (Regular Expressions, Regex) in Python zu verwenden. \\
+Zunächst wird das Buch eingelesen und bereinigt.
+Dazu werden verschiedene Regular Expressions sowie Python String Manipulation verwendet.
+Danach wird das jeweilige Textfragment eingelesen, und daraus ein entsprechender Regex geformt, welcher
+auf alle Textstellen
+
+\subsection{Buch bereinigen}\label{subsec:buch-bereinigen}
+Im ersten Schritt wird alles, was kein Wort oder ein Leerzeichen ist entfernt. \\
+Dies passiert mittels folgendem Regex: \verb/[^\w\s]/ \\
+Die re\#sub Funktion findet und ersetzt alle Textstellen, welche vom angegeben Regex gefunden werden. \\
+Anschließend werden alle Neuzeilen durch Leerzeichen ersetzt.
+Zudem werden alle Einrückungen mittels Tabulator-Taste sowie Unterstriche entfernt.
+Dafür wird Pythons String\#replace Methode verwendet.\\
+Abschließend werden alle überflüssigen Leerzeichen mittels diesem Regex \verb/\s{2,}/ gefunden und durch ein einzelnes
+Leerzeichen ersetzt.
+
+
+\subsection{Textfragment finden}\label{subsec:textfragment-finden}
+
 
 
 \section{Beispiele}\label{sec:beispiele}
