@@ -8,7 +8,7 @@
 Das Satzfragment wird eingelesen und in eine Regular Expression überführt.
 Außerdem wird das Buch von seinen Satz- und Sonderzeichen sowie Einrückungen bereinigt.
 Anschließend wird mittels der Regular Expression alle in betracht kommenden Textstellen gesucht
-und letztendlich Ausgegeben.
+und letztendlich ausgegeben.
 
 
 \section{Umsetzung}\label{sec:umsetzung}
@@ -21,26 +21,110 @@ Danach wird das jeweilige Textfragment eingelesen, und daraus ein entsprechender
 auf alle Textstellen
 
 \subsection{Buch bereinigen}\label{subsec:buch-bereinigen}
-Im ersten Schritt wird alles, was kein Wort oder ein Leerzeichen ist entfernt. \\
+Im ersten Schritt wird alles, das kein Wort oder Leerzeichen ist, entfernt. \\
 Dies passiert mittels folgendem Regex: \verb/[^\w\s]/ \\
 Die re\#sub Funktion findet und ersetzt alle Textstellen, welche vom angegeben Regex gefunden werden. \\
-Anschließend werden alle Neuzeilen durch Leerzeichen ersetzt.
-Zudem werden alle Einrückungen mittels Tabulator-Taste sowie Unterstriche entfernt.
+Anschließend werden alle Neuzeilen durch Leerzeichen ersetzt und
+alle Einrückungen mittels Tabulator-Taste, sowie Unterstriche, entfernt.
 Dafür wird Pythons String\#replace Methode verwendet.\\
-Abschließend werden alle überflüssigen Leerzeichen mittels diesem Regex \verb/\s{2,}/ gefunden und durch ein einzelnes
-Leerzeichen ersetzt.
-
+Abschließend werden alle überflüssigen Leerzeichen mittels diesem Regex \verb/\s{2,}/ gefunden
+und durch ein einzelnes Leerzeichen ersetzt.
 
 \subsection{Textfragment finden}\label{subsec:textfragment-finden}
+Um alle passenden Textstellen im nun bereinigten Buchtext zu finden,
+werden abermals Regular Expressions benutzt.
+Ziel ist es eine Regular Expression anhand des Textfragments zu generieren, welche auf alle Textstellen zutrifft
+die für das jeweilige Fragment \("\)passend\("\) sind.
+Dafür wird das eingelesene Textfragment an den Leerzeichen getrennt.
+Über die dadurch entstandenen Satzfragmentteile wird im nächsten Schritt iteriert.
+Handelt es sich bei einem Teil um einen Unterstrich,
+soll also ein beliebiges Wort an dieser Stelle des Fragmentes passen,
+so wird dem entstehenden Regex dieser Regex \verb/([^\\s]+)\\W+/ angehangen.
+Handelt es sich bei einem Teil allerdings um ein tatsächliches Wort, wird
+der Prefix \verb/(/, dann das Wort, und dann der Suffix \verb/)\\W+/ angehangen. \\
+Anschließend wird der so generierte Regex auf den Buchtext angewandt, um alle passenden Textstellen zu finden.
+Hierbei wird die Großkleinschreibung der Wörter ignoriert.
+Alle gefundenen Textstellen werden abschließend ausgegeben,
 
+wobei mehrfach auftretende Textstellen nur einmal ausgegeben werden.
 
 
 \section{Beispiele}\label{sec:beispiele}
-Genügend Beispiele einbinden!
-Die Beispiele von der BwInf-Webseite sollten hier diskutiert werden, aber auch eigene Beispiele sind sehr gut - besonders wenn sie Spezialfälle abdecken.
-Aber bitte nicht 30 Seiten Programmausgabe hier einfügen!
+Es folgen die Programmausgaben für die Beispiele der BWINF-Website.
+
+\subsection{stoerung0}\label{subsec:stoerung0}
+Generierter Regexausdruck: \verb/(das)\W+([^\s]+)\W+(mir)\W+([^\s]+)\W+([^\s]+)\W+([^\s]+)\W+(vor)\W+/ \\
+Passende Textstelle: Das kommt mir gar nicht richtig vor
+
+\subsection{stoerung1}\label{subsec:stoerung1}
+Generierter Regexausdruck: \verb/(ich)\W+(muß)\W+([^\s]+)\W+(clara)\W+([^\s]+)\W+/ \\
+Passende Textstelle: Ich muß in Clara verwandelt \\
+Passende Textstelle: Ich muß doch Clara sein
+
+\subsection{stoerung2}\label{subsec:stoerung2}
+Generierter Regexausdruck: \verb/(fressen)\W+([^\s]+)\W+(gern)\W+([^\s]+)\W+/ \\
+Passende Textstelle: Fressen Katzen gern Spatzen \\
+Passende Textstelle: Fressen Spatzen gern Katzen
+
+\subsection{stoerung3}\label{subsec:stoerung3}
+Generierter Regexausdruck: \verb/(das)\W+([^\s]+)\W+(fing)\W+([^\s]+)\W+/ \\
+Passende Textstelle: Das Publikum fing an \\
+Passende Textstelle: das Spiel fing an
+
+\subsection{stoerung4}\label{subsec:stoerung4}
+Generierter Regexausdruck: \verb/(ein)\W+([^\s]+)\W+([^\s]+)\W+(tag)\W+/ \\
+Passende Textstelle: ein sehr schöner Tag
+
+\subsection{stoerung5}\label{subsec:stoerung5}
+Generierter Regexausdruck: \verb/(wollen)\W+([^\s]+)\W+(so)\W+([^\s]+)\W+(sein)\W+/ \\
+Passende Textstelle: Wollen Sie so gut sein
 
 
 \section{Quellcode}\label{sec:quellcode}
-Unwichtige Teile des Programms sollen hier nicht abgedruckt werden.
-Dieser Teil sollte nicht mehr als 2 bis 3 Seiten umfassen, maximal 10.
+\begin{lstlisting}[language=Python,label={lst:sourcecode}]
+# coding=utf-8
+import re
+
+
+def create_regex(string):
+    out = ""
+
+    word_prefix = "("
+    word_suffix = ")\\W+"
+    wildcard = "([^\\s]+)\\W+"
+
+    for element in string.split(' '):
+        if element == "_":
+            out += wildcard
+        else:
+            out += word_prefix + element + word_suffix
+
+    return out
+
+
+def clean(string):
+    everything_but_words_and_spaces = re.compile(r"[^\w\s]")
+    redundant_spaces = re.compile(r"\s{2,}")
+    string = re.sub(everything_but_words_and_spaces, '', string)
+    string = string.replace('\n', ' ')
+    string = string.replace('\t', '')
+    string = string.replace('_', '')
+    string = re.sub(redundant_spaces, ' ', string)
+    return string
+
+
+if __name__ == '__main__':
+    nr = input("Bitte gib an, welche Beispielnummer bearbeitet werden soll: ")
+    with open("resources/Alice_im_Wunderland.txt", encoding="utf-8") as file:
+        data = file.read()
+        data = clean(data)
+        # print(data)
+        with open(f'resources/stoerung{nr}.txt', encoding="utf-8") as riddle:
+            riddle_data = riddle.read()
+            regex = create_regex(riddle_data)
+            print("Generierter Regexausdruck: " + regex)
+            matches = set(re.findall(regex, data, flags=re.IGNORECASE))
+            for match in matches:
+                print(f'Passende Textstelle: {" ".join(match)}')
+\end{lstlisting}
+
