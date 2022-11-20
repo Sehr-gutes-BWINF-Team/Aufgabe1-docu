@@ -5,47 +5,46 @@
 
 
 \section{Lösungsidee}\label{sec:losungsidee}
-Das Satzfragment wird eingelesen und in eine Regular Expression überführt.
+Das gesuchte Satzfragment wird eingelesen und in eine Regular Expression überführt.
 Außerdem wird das Buch von seinen Satz- und Sonderzeichen sowie Einrückungen bereinigt.
-Anschließend wird mittels der Regular Expression alle in betracht kommenden Textstellen gesucht
+Anschließend wird mittels der Regular Expression alle in Betracht kommenden Textstellen gesucht
 und letztendlich ausgegeben.
 
 
 \section{Umsetzung}\label{sec:umsetzung}
-Die Implementierung erfolgt in Python. \\
-Es wird das Python re module verwendet.
-Dieses ermöglicht es Reguläre Ausdrücke (Regular Expressions, Regex) in Python zu verwenden. \\
-Zunächst wird das Buch eingelesen und bereinigt.
+Die Implementierung erfolgt in Python 3.9. \\
+Es wird das Python \verb/re/ module verwendet.
+Dieses ermöglicht es, Reguläre Ausdrücke (Regular Expressions, Regex) in Python zu verwenden. \\
+Zunächst wird das Buch eingelesen und bereinigt, um das spätere Suchen von passenden Satzfragmenten zu vereinfachen.
 Dazu werden verschiedene Regular Expressions sowie Python String Manipulation verwendet.
 Danach wird das jeweilige Textfragment eingelesen, und daraus ein entsprechender Regex geformt, welcher
-auf alle Textstellen
+alle passenden Textstellen sucht.
 
 \subsection{Buch bereinigen}\label{subsec:buch-bereinigen}
 Im ersten Schritt wird alles, das kein Wort oder Leerzeichen ist, entfernt. \\
 Dies passiert mittels folgendem Regex: \verb/[^\w\s]/ \\
-Die re\#sub Funktion findet und ersetzt alle Textstellen, welche vom angegeben Regex gefunden werden. \\
-Anschließend werden alle Neuzeilen durch Leerzeichen ersetzt und
+Die \verb/re\#sub/ Funktion findet und ersetzt alle Textstellen, welche vom angegeben Regex gefunden werden. \\
+Anschließend werden alle Zeilenendezeichen durch Leerzeichen ersetzt und
 alle Einrückungen mittels Tabulator-Taste, sowie Unterstriche, entfernt.
-Dafür wird Pythons String\#replace Methode verwendet.\\
+Dafür wird Pythons \verb/String\#replace/ Methode verwendet.\\
 Abschließend werden alle überflüssigen Leerzeichen mittels diesem Regex \verb/\s{2,}/ gefunden
 und durch ein einzelnes Leerzeichen ersetzt.
 
 \subsection{Textfragment finden}\label{subsec:textfragment-finden}
 Um alle passenden Textstellen im nun bereinigten Buchtext zu finden,
 werden abermals Regular Expressions benutzt.
-Ziel ist es eine Regular Expression anhand des Textfragments zu generieren, welche auf alle Textstellen zutrifft
+Ziel ist es, eine Regular Expression anhand des Textfragments zu generieren, welche auf alle Textstellen zutrifft,
 die für das jeweilige Fragment \("\)passend\("\) sind.
 Dafür wird das eingelesene Textfragment an den Leerzeichen getrennt.
 Über die dadurch entstandenen Satzfragmentteile wird im nächsten Schritt iteriert.
 Handelt es sich bei einem Teil um einen Unterstrich,
 soll also ein beliebiges Wort an dieser Stelle des Fragmentes passen,
-so wird dem entstehenden Regex dieser Regex \verb/([^\\s]+)\\W+/ angehangen.
+so wird dem entstehenden Regex dieser Regex \verb/([^\s]+)\W/ angehängt.
 Handelt es sich bei einem Teil allerdings um ein tatsächliches Wort, wird
-der Prefix \verb/(/, dann das Wort, und dann der Suffix \verb/)\\W+/ angehangen. \\
+der Prefix \verb/(/, dann das Wort, und dann der Suffix \verb/)\W/ angehängt. \\
 Anschließend wird der so generierte Regex auf den Buchtext angewandt, um alle passenden Textstellen zu finden.
 Hierbei wird die Großkleinschreibung der Wörter ignoriert.
 Alle gefundenen Textstellen werden abschließend ausgegeben,
-
 wobei mehrfach auftretende Textstellen nur einmal ausgegeben werden.
 
 
@@ -53,30 +52,30 @@ wobei mehrfach auftretende Textstellen nur einmal ausgegeben werden.
 Es folgen die Programmausgaben für die Beispiele der BWINF-Website.
 
 \subsection{stoerung0}\label{subsec:stoerung0}
-Generierter Regexausdruck: \verb/(das)\W+([^\s]+)\W+(mir)\W+([^\s]+)\W+([^\s]+)\W+([^\s]+)\W+(vor)\W+/ \\
+Generierter Regexausdruck: \verb/(das)\W([^\s]+)\W(mir)\W([^\s]+)\W([^\s]+)\W([^\s]+)\W(vor)\W/ \\
 Passende Textstelle: Das kommt mir gar nicht richtig vor
 
 \subsection{stoerung1}\label{subsec:stoerung1}
-Generierter Regexausdruck: \verb/(ich)\W+(muß)\W+([^\s]+)\W+(clara)\W+([^\s]+)\W+/ \\
+Generierter Regexausdruck: \verb/(ich)\W(muß)\W([^\s]+)\W(clara)\W([^\s]+)\W/ \\
 Passende Textstelle: Ich muß in Clara verwandelt \\
 Passende Textstelle: Ich muß doch Clara sein
 
 \subsection{stoerung2}\label{subsec:stoerung2}
-Generierter Regexausdruck: \verb/(fressen)\W+([^\s]+)\W+(gern)\W+([^\s]+)\W+/ \\
+Generierter Regexausdruck: \verb/(fressen)\W([^\s]+)\W(gern)\W([^\s]+)\W/ \\
 Passende Textstelle: Fressen Katzen gern Spatzen \\
 Passende Textstelle: Fressen Spatzen gern Katzen
 
 \subsection{stoerung3}\label{subsec:stoerung3}
-Generierter Regexausdruck: \verb/(das)\W+([^\s]+)\W+(fing)\W+([^\s]+)\W+/ \\
+Generierter Regexausdruck: \verb/(das)\W([^\s]+)\W(fing)\W([^\s]+)\W/ \\
 Passende Textstelle: Das Publikum fing an \\
 Passende Textstelle: das Spiel fing an
 
 \subsection{stoerung4}\label{subsec:stoerung4}
-Generierter Regexausdruck: \verb/(ein)\W+([^\s]+)\W+([^\s]+)\W+(tag)\W+/ \\
+Generierter Regexausdruck: \verb/(ein)\W([^\s]+)\W([^\s]+)\W(tag)\W/ \\
 Passende Textstelle: ein sehr schöner Tag
 
 \subsection{stoerung5}\label{subsec:stoerung5}
-Generierter Regexausdruck: \verb/(wollen)\W+([^\s]+)\W+(so)\W+([^\s]+)\W+(sein)\W+/ \\
+Generierter Regexausdruck: \verb/(wollen)\W([^\s]+)\W(so)\W([^\s]+)\W(sein)\W/ \\
 Passende Textstelle: Wollen Sie so gut sein
 
 
@@ -90,8 +89,8 @@ def create_regex(string):
     out = ""
 
     word_prefix = "("
-    word_suffix = ")\\W+"
-    wildcard = "([^\\s]+)\\W+"
+    word_suffix = ")\\W"
+    wildcard = "([^\\s]+)\\W"
 
     for element in string.split(' '):
         if element == "_":
